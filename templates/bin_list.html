@@ -27,12 +27,12 @@
             {% for bin in bins %}
             <tr class="hover:bg-gray-50">
                 <td class="px-4 py-3">
-                <a href="{{ url_for('bins.detail', bin_id=bin.id) }}" class="text-slate-700 hover:underline font-medium">{{ bin.name }}</a>
+                <a href="{{ url_for('bins.detail', tag=bin.tag) }}" class="text-slate-700 hover:underline font-medium">{{ bin.name }}</a>
                 </td>
                 <td class="px-4 py-3"><code class="bg-gray-100 px-1 text-sm">{{ bin.tag }}</code></td>
                 <td class="px-4 py-3">
                     {% if bin.crate %}
-                        <a href="{{ url_for('crate.detail', crate_id=bin.crate.id) }}" class="text-slate-700 hover:underline">{{ bin.crate.name }}</a>
+                        <a href="{{ url_for('crates.detail', crate_id=bin.crate.id) }}" class="text-slate-700 hover:underline">{{ bin.crate.name }}</a>
                     {% else %}
                         <em class="text-gray-400">-</em>
                     {% endif %}
@@ -46,7 +46,7 @@
         </table>
     </div>
 {% else %}
-    <p class="text-gray-500">No bins yet. <a href="{{ url_for('bins.new') }}" class="text-slate-700 hover:underline">Create one.</a></p>
+    <p class="text-gray-500">No bins yet. <a href="{{ url_for('bins.new') }}" class="text-slate-700 underline hover:no-underline">Create one.</a></p>
 {% endif %}
 
 {% endblock %}

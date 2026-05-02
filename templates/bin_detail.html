@@ -6,7 +6,7 @@
     <a href="{{ url_for('bins.list_bins') }}" class="text-slate-700 hover:underline">Bins</a>
     {% for b in bin.ancestors() %}
         <span>›</span>
-        <a href="{{ url_for('bins.detail', bin_id=b.id) }}" class="text-slate-700 hover:underline">{{ b.name }}</a>
+        <a href="{{ url_for('bins.detail', tag=b.tag) }}" class="text-slate-700 hover:underline">{{ b.name }}</a>
     {% endfor %}
     <span>›</span>
     <span class="text-gray-700 font-medium">{{ bin.name }}</span>
@@ -16,11 +16,11 @@
     <div>
         <h2 class="text-2xl font-semibold">{{ bin.name }}</h2> 
         <p class="text-sm text-gray-500 mt-1">
-        Tag: <code class="bg-gray-100 px-1">{{ bin.tag }}</code>
+        Asset Tag: <code class="bg-gray-100 px-1">{{ bin.tag }}</code>
         &nbsp;·&nbsp;
         Crate:
         {% if bin.crate %}
-            <a href="{{ url_for('crate.detail', crate_id=bin.crate.id) }}" class="text-slate-700 hover:underline">{{ bin.crate.name }}</a>
+            <a href="{{ url_for('crates.detail', crate_id=bin.crate.id) }}" class="text-slate-700 hover:underline">{{ bin.crate.name }}</a>
         {% else %}
             <em class="text-gray-400">None</em>
         {% endif %}
@@ -37,7 +37,7 @@
         class="bg-slate-700 text-white hover:bg-slate-800 px-3 py-1.5 text-sm">
         New Asset
         </a>
-        <form method="post" action="{{ url_for('bins.delete', bin_id=bin.id) }}"
+        <form method="post" action="{{ url_for('bins.delete', tag=bin.tag) }}"
         <button type="submit"
                 class="bg-red-500 text-white hover:bg-red-600 px-3 py-1.5 text-sm">
             Delete
@@ -62,7 +62,7 @@
             {% for child in bin.children %}
             <tr class="hover:bg-gray-50">
                 <td class="px-4 py-3">
-                <a href="{{ url_for('bins.detail', bin_id=child.id) }}" class="text-slate-700 hover:underline font-medium">{{ child.name }}</a>
+                <a href="{{ url_for('bins.detail', tag=child.tag) }}" class="text-slate-700 hover:underline font-medium">{{ child.name }}</a>
                 </td>
                 <td class="px-4 py-3"><code class="bg-gray-100 px-1 text-sm">{{ child.tag }}</code></td>
                 <td class="px-4 py-3 text-gray-600">{{ child.children | length }} bin(s), {{ child.assets | length }} asset(s)</td>
@@ -90,7 +90,7 @@
             {% for asset in bin.assets %}
             <tr class="hover:bg-gray-50">
                 <td class="px-4 py-3">
-                <a href="{{ url_for('assets.detail', asset_id=asset.id) }}" class="text-slate-700 hover:underline font-medium">{{ asset.name }}</a>
+                <a href="{{ url_for('assets.detail', tag=asset.asset_tag) }}" class="text-slate-700 hover:underline font-medium">{{ asset.name }}</a>
                 </td>
                 <td class="px-4 py-3"><code class="bg-gray-100 px-1 text-sm">{{ asset.asset_tag }}</code></td>
                 <td class="px-4 py-3 text-gray-600">{{ asset.barcode or '-' }}</td>
@@ -108,7 +108,7 @@
 
 <div class="mt-6 pt-4 border-t border-gray-200">
     <h3 class="text-sm font-semibold text-gray-700 mb-2">Move to different parent</h3>
-    <form method="post" action="{{ url_for('bins.move', bin_id=bin.id) }}" class="flex gap-2">
+    <form method="post" action="{{ url_for('bins.move', tag=bin.tag) }}" class="flex gap-2">
         <select name="parent_id"
                 class="border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent">
         <option value="">None (top-level)</option>
@@ -118,6 +118,25 @@
                 {{ b.name }} ({{ b.tag }})
             </option>
             {% endif %}
+        {% endfor %}
+        </select>
+        <button type="submit"
+                class="bg-slate-700 text-white hover:bg-slate-800 px-3 py-1.5 text-sm">
+        Move
+        </button>
+    </form>
+</div>
+
+<div class="mt-4 pt-4 border-t border-gray-200">
+    <h3 class="text-sm font-semibold text-gray-700 mb-2">Move to different crate</h3>
+    <form method="post" action="{{ url_for('bins.move_crate', tag=bin.tag) }}" class="flex gap-2">
+        <select name="crate_id"
+                class="border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent">
+        <option value="">None</option>
+        {% for c in all_crates %}
+            <option value="{{ c.id }}" {% if bin.crate_id == c.id %}selected{% endif %}>
+                {{ c.name }}
+            </option>
         {% endfor %}
         </select>
         <button type="submit"

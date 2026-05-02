@@ -26,13 +26,13 @@
             {% for asset in assets %}
             <tr class="hover:bg-gray-50">
                 <td class="px-4 py-3">
-                <a href="{{ url_for('assets.detail', asset_id=asset.id) }}" class="text-slate-700 hover:underline font-medium">{{ asset.name }}</a>
+                <a href="{{ url_for('assets.detail', tag=asset.asset_tag) }}" class="text-slate-700 hover:underline font-medium">{{ asset.name }}</a>
                 </td>
                 <td class="px-4 py-3"><code class="bg-gray-100 px-1 text-sm">{{ asset.asset_tag }}</code></td>
                 <td class="px-4 py-3 text-gray-600">{{ asset.barcode or '-' }}</td>
                 <td class="px-4 py-3">
                 {% if asset.bin %}
-                    <a href="{{ url_for('bins.detail', bin_id=asset.bin.id) }}" class="text-slate-700 hover:underline">{{ asset.bin.name }}</a>
+                    <a href="{{ url_for('bins.detail', tag=asset.bin.tag) }}" class="text-slate-700 hover:underline">{{ asset.bin.name }}</a>
                 {% else %}
                     <em class="text-gray-400">Unassigned</em>
                 {% endif %}
@@ -44,7 +44,7 @@
         </table>
     </div>
 {% else %}
-    <p class="text-gray-500">No assets. <a href="{{ url_for('assets.new') }}" class="text-slate-700 hover:underline">Create one.</a></p>
+    <p class="text-gray-500">No assets. <a href="{{ url_for('assets.new') }}" class="text-slate-700 underline hover:no-underline">Create one.</a></p>
 {% endif %}
 
 

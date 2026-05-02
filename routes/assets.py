@@ -23,9 +23,9 @@ def list_assets():
     assets = Asset.query.order_by(Asset.name).all()
     return render_template('asset_list.html', assets=assets)
 
-@assets_bp.route('/<int:asset_id>')
-def detail(asset_id):
-    asset = db.get_or_404(Asset, asset_id)
+@assets_bp.route('/<tag>')
+def detail(tag):
+    asset = Asset.query.filter_by(asset_tag=tag).first_or_404()
     all_bins = Bin.query.order_by(Bin.name).all()
     return render_template('asset_detail.html', asset=asset, all_bins=all_bins)
 
@@ -60,21 +60,21 @@ def new():
             )
             db.session.add(asset)
             db.session.commit()
-            return redirect(url_for('assets.detail', asset_id=asset.id))
+            return redirect(url_for('assets.detail', tag=asset.asset_tag))
     return render_template('asset_new.html', all_bins=all_bins)
 
 
-@assets_bp.route('/<int:asset_id>/move', methods=['POST'])
-def move(asset_id):
-    asset = db.get_or_404(Asset, asset_id)
+@assets_bp.route('/<tag>/move', methods=['POST'])
+def move(tag):
+    asset = Asset.query.filter_by(asset_tag=tag).first_or_404()
     asset.bin_id = request.form.get('bin_id') or None
     db.session.commit()
-    return redirect(url_for('assets.detail', asset_id=asset_id))
+    return redirect(url_for('assets.detail', tag=tag))
 
 
-@assets_bp.route('/<int:asset_id>/delete', methods=['POST'])
-def delete(asset_id):
-    asset = db.get_or_404(Asset, asset_id)
+@assets_bp.route('/<tag>/delete', methods=['POST'])
+def delete(tag):
+    asset = Asset.query.filter_by(asset_tag=tag).first_or_404()
     db.session.delete(asset)
     db.session.commit()
     return redirect(url_for('assets.list_assets'))
