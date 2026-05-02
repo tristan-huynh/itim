@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, session, url_for
 from models import db, Bin, Asset
 from datetime import datetime, timezone
 
@@ -16,15 +16,19 @@ def index():
             asset = Asset.query.filter(
                 (Asset.asset_tag == tag) | (Asset.barcode == tag)
             ).first()
+            user = session.get('user', {}).get('preferred_username')
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
             if asset:
-                asset.last_scan = datetime.now(timezone.utc).replace(tzinfo=None)
+                asset.last_scan = now
+                asset.last_scanned_by = user
                 db.session.commit()
                 result = asset
                 result_type = 'asset'
             else:
                 bin_ = Bin.query.filter_by(tag=tag).first()
                 if bin_:
-                    bin_.last_scan = datetime.now(timezone.utc).replace(tzinfo=None)
+                    bin_.last_scan = now
+                    bin_.last_scanned_by = user
                     db.session.commit()
                     result = bin_
                     result_type = 'bin'

@@ -4,14 +4,13 @@
 
 <div class="flex justify-between items-start mb-6">
     <div>
-        <h2 class="text-2xl font-semibold">{{ crate.name }}</h2>
-        <p class="text-sm text-gray-500 mt-1">
-        {% if crate.latitude is not none and crate.longitude is not none %}
-            {{ crate.latitude }}, {{ crate.longitude }}
-        {% else %}
-            <em>No location set</em>
-        {% endif %}
-        </p>
+        <h2 class="text-2xl font-semibold mb-2">{{ crate.name }}</h2>
+        <dl class="text-sm text-gray-500 space-y-0.5">
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Location</dt>
+                <dd>{% if crate.latitude is not none and crate.longitude is not none %}{{ crate.latitude }}, {{ crate.longitude }}{% else %}<em class="text-gray-400">Not set</em>{% endif %}</dd>
+            </div>
+        </dl>
     </div>
     <div class="flex gap-2">
         <a href="{{ url_for('crates.edit', crate_id=crate.id) }}"

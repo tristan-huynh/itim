@@ -74,8 +74,11 @@ def new():
 
 @assets_bp.route('/<tag>/move', methods=['POST'])
 def move(tag):
+    from datetime import datetime, timezone
     asset = Asset.query.filter_by(asset_tag=tag).first_or_404()
     asset.bin_id = request.form.get('bin_id') or None
+    asset.last_modified_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    asset.last_modified_by = (session.get('user') or {}).get('preferred_username')
     db.session.commit()
     return redirect(url_for('assets.detail', tag=tag))
 
@@ -85,7 +88,7 @@ def barcode_img(tag):
     asset = Asset.query.filter_by(asset_tag=tag).first_or_404()
     code128 = barcode.get('code128', asset.asset_tag, writer=ImageWriter())
     buf = io.BytesIO()
-    code128.write(buf, options={'write_text': True, 'module_height': 10, 'font_size': 6, 'text_distance': 2})
+    code128.write(buf, options={'write_text': True, 'module_height': 10, 'font_size': 6, 'text_distance': 4})
     buf.seek(0)
     return send_file(buf, mimetype='image/png')
 

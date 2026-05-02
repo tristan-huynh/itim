@@ -6,15 +6,41 @@
 
     <!-- col 1: main content -->
     <div class="flex-1">
-        <h2 class="text-2xl font-semibold">{{ asset.name }}</h2>
-        <p class="text-sm text-gray-500 mt-1 mb-6">
-            Asset Tag: <code class="bg-gray-100 text-sm px-1">{{ asset.asset_tag }}</code>
-            {% if asset.barcode %}&nbsp;·&nbsp; Barcode: <code class="bg-gray-100 px-1">{{ asset.barcode }}</code>{% endif %}
-            {% if asset.serial_number %}&nbsp;·&nbsp; S/N: <code class="bg-gray-100 px-1">{{ asset.serial_number }}</code>{% endif %}
-            &nbsp;·&nbsp;
-            Last scan: {{ asset.last_scan.strftime('%Y-%m-%d %H:%M') if asset.last_scan else 'Never' }}
-            {% if asset.created_by %}&nbsp;·&nbsp; Created by: {{ asset.created_by }}{% endif %}
-        </p>
+        <h2 class="text-2xl font-semibold mb-2">{{ asset.name }}</h2>
+        <dl class="text-sm text-gray-500 space-y-0.5 mb-6">
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Asset Tag</dt>
+                <dd><code class="bg-gray-100 px-1">{{ asset.asset_tag }}</code></dd>
+            </div>
+            {% if asset.barcode %}
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Barcode</dt>
+                <dd><code class="bg-gray-100 px-1">{{ asset.barcode }}</code></dd>
+            </div>
+            {% endif %}
+            {% if asset.serial_number %}
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Serial No.</dt>
+                <dd><code class="bg-gray-100 px-1">{{ asset.serial_number }}</code></dd>
+            </div>
+            {% endif %}
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Last Scan</dt>
+                <dd>{{ asset.last_scan.strftime('%Y-%m-%d %H:%M') if asset.last_scan else 'Never' }}{% if asset.last_scanned_by %} by {{ asset.last_scanned_by }}{% endif %}</dd>
+            </div>
+            {% if asset.created_by %}
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Created By</dt>
+                <dd>{{ asset.created_by }}</dd>
+            </div>
+            {% endif %}
+            {% if asset.last_modified_at %}
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Modified</dt>
+                <dd>{{ asset.last_modified_at.strftime('%Y-%m-%d %H:%M') }}{% if asset.last_modified_by %} by {{ asset.last_modified_by }}{% endif %}</dd>
+            </div>
+            {% endif %}
+        </dl>
 
         <div class="bg-white border border-gray-200 p-4 mb-6 max-w-sm">
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Current Location</p>
@@ -50,11 +76,11 @@
     <!-- col 2: barcode + QR code -->
     <div class="flex-shrink-0 flex gap-4 items-start print:border print:p-2">
         <div class="text-center">
-            <img src="{{ url_for('assets.barcode_img', tag=asset.asset_tag) }}" alt="Barcode" class="h-32">
+            <img src="{{ url_for('assets.barcode_img', tag=asset.asset_tag) }}" alt="Barcode" class="h-32 border border-gray-200">
             <p class="text-xs text-gray-500 mt-1">{{ asset.asset_tag }}</p>
         </div>
         <div class="text-center">
-            <img src="{{ url_for('assets.qr', tag=asset.asset_tag) }}" alt="QR code" class="w-32 h-32">
+            <img src="{{ url_for('assets.qr', tag=asset.asset_tag) }}" alt="QR code" class="w-32 h-32 border border-gray-200">
             <p class="text-xs text-gray-500 mt-1">{{ asset.asset_tag }}</p>
         </div>
     </div>
