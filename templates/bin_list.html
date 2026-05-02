@@ -17,6 +17,7 @@
             <tr>
             <th class="px-4 py-3 font-semibold text-gray-600">Name</th>
             <th class="px-4 py-3 font-semibold text-gray-600">Tag</th>
+            <th class="px-4 py-3 font-semibold text-gray-600">Crate</th>
             <th class="px-4 py-3 font-semibold text-gray-600">Child Bins</th>
             <th class="px-4 py-3 font-semibold text-gray-600">Assets</th>
             <th class="px-4 py-3 font-semibold text-gray-600">Last Scan</th>
@@ -29,6 +30,13 @@
                 <a href="{{ url_for('bins.detail', bin_id=bin.id) }}" class="text-slate-700 hover:underline font-medium">{{ bin.name }}</a>
                 </td>
                 <td class="px-4 py-3"><code class="bg-gray-100 px-1 text-sm">{{ bin.tag }}</code></td>
+                <td class="px-4 py-3">
+                    {% if bin.crate %}
+                        <a href="{{ url_for('crate.detail', crate_id=bin.crate.id) }}" class="text-slate-700 hover:underline">{{ bin.crate.name }}</a>
+                    {% else %}
+                        <em class="text-gray-400">-</em>
+                    {% endif %}
+                </td>
                 <td class="px-4 py-3 text-gray-600">{{ bin.children | length }}</td>
                 <td class="px-4 py-3 text-gray-600">{{ bin.assets | length }}</td>
                 <td class="px-4 py-3 text-gray-500">{{ bin.last_scan.strftime('%Y-%m-%d %H:%M') if bin.last_scan else '-' }}</td>

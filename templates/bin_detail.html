@@ -18,6 +18,13 @@
         <p class="text-sm text-gray-500 mt-1">
         Tag: <code class="bg-gray-100 px-1">{{ bin.tag }}</code>
         &nbsp;·&nbsp;
+        Crate:
+        {% if bin.crate %}
+            <a href="{{ url_for('crate.detail', crate_id=bin.crate.id) }}" class="text-slate-700 hover:underline">{{ bin.crate.name }}</a>
+        {% else %}
+            <em class="text-gray-400">None</em>
+        {% endif %}
+        &nbsp;·&nbsp;
         Last scan: {{ bin.last_scan.strftime('%Y-%m-%d %H:%M') if bin.last_scan else 'Never' }}
         </p>
     </div>
