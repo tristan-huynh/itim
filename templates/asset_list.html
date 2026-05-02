@@ -2,5 +2,50 @@
 {% block title %}Assets - ITIM{% endblock %}
 {% block content %}
 
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold">Assets</h2>
+    <a href="{{ url_for('assets.new') }}"
+        class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium">
+        New Asset
+    </a>
+</div>
+
+{% if assets %}
+    <div class="bg-white border border-gray-200 overflow-hidden">
+        <table class="w-full text-sm text-left">
+        <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+            <th class="px-4 py-3 font-semibold text-gray-600">Name</th>
+            <th class="px-4 py-3 font-semibold text-gray-600">Asset Tag</th>
+            <th class="px-4 py-3 font-semibold text-gray-600">Barcode</th>
+            <th class="px-4 py-3 font-semibold text-gray-600">Location</th>
+            <th class="px-4 py-3 font-semibold text-gray-600">Last Scan</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for asset in assets %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3">
+                <a href="{{ url_for('assets.detail', asset_id=asset.id) }}" class="text-slate-700 hover:underline font-medium">{{ asset.name }}</a>
+                </td>
+                <td class="px-4 py-3"><code class="bg-gray-100 px-1 text-base">{{ asset.asset_tag }}</code></td>
+                <td class="px-4 py-3 text-gray-600">{{ asset.barcode or '-' }}</td>
+                <td class="px-4 py-3">
+                {% if asset.bin %}
+                    <a href="{{ url_for('bins.detail', bin_id=asset.bin.id) }}" class="text-slate-700 hover:underline">{{ asset.bin.name }}</a>
+                {% else %}
+                    <em class="text-gray-400">Unassigned</em>
+                {% endif %}
+                </td>
+                <td class="px-4 py-3 text-gray-500">{{ asset.last_scan.strftime('%Y-%m-%d %H:%M') if asset.last_scan else '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+{% else %}
+    <p class="text-gray-500">No assets. <a href="{{ url_for('assets.new') }}" class="text-slate-700 hover:underline">Create one.</a></p>
+{% endif %}
+
 
 {% endblock %}

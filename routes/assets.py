@@ -1,7 +1,7 @@
 import secrets
 import string
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, request, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, request, session, jsonify
 from models import db, Bin, Asset
 
 
@@ -57,7 +57,6 @@ def new():
         else:
             asset = Asset(
                 asset_tag=asset_tag, name=name, barcode=barcode, bin_id=bin_id,
-                created_by=session['user']['name'],
             )
             db.session.add(asset)
             db.session.commit()
