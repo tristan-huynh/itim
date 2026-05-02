@@ -23,6 +23,22 @@ def list_assets():
     assets = Asset.query.order_by(Asset.name).all()
     return render_template('asset_list.html', assets=assets)
 
+@assets_bp.route('/<int:asset_id>')
+def detail(asset_id):
+    asset = db.get_or_404(Asset, asset_id)
+    all_bins = Bin.query.order_by(Bin.name).all()
+    return render_template('asset_detail.html', asset=asset, all_bins=all_bins)
+
+@assets_bp.route('/generate-tag')
+def generate_tag():
+    prefix = None
+    bin_id = request.args.get('bin_id')
+    if bin_id:
+        bin_ = db.session.get(Bin, int(bin_id))
+        if bin_ and '-' in bin_.tag:
+            prefix = bin_.tag.split('-')[0]
+    return jsonify(tag=_unique_asset_tag(prefix))
+
 
 @assets_bp.route('/new', methods=['GET', 'POST'])
 def new():
@@ -47,3 +63,19 @@ def new():
             db.session.commit()
             return redirect(url_for('assets.detail', asset_id=asset.id))
     return render_template('asset_new.html', all_bins=all_bins)
+
+
+@assets_bp.route('/<int:asset_id>/move', methods=['POST'])
+def move(asset_id):
+    asset = db.get_or_404(Asset, asset_id)
+    asset.bin_id = request.form.get('bin_id') or None
+    db.session.commit()
+    return redirect(url_for('assets.detail', asset_id=asset_id))
+
+
+@assets_bp.route('/<int:asset_id>/delete', methods=['POST'])
+def delete(asset_id):
+    asset = db.get_or_404(Asset, asset_id)
+    db.session.delete(asset)
+    db.session.commit()
+    return redirect(url_for('assets.list_assets'))

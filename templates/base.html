@@ -7,16 +7,16 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen">
-    <nav class="bg-white text-gray-900">
+<body class="bg-white text-gray-900 min-h-screen">
+    <nav class="bg-white text-gray-900 border-b border-gray-200">
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <a href="{{ url_for('scan.index') }}">
-            <img src="{{ url_for('static', filename='icon.png') }}" alt="ITIM" class="h-8">
+            <img src="{{ url_for('static', filename='icon.png') }}" alt="ITIM" class="h-10">
         </a>
         <div class="flex items-center gap-6 text-sm">
-            <a href="{{ url_for('scan.index') }}" class="text-gray-900 hover:text-white">Scan</a>
-            <a href="{{ url_for('bins.list_bins') }}" class="text-gray-900 hover:text-white">Bins</a>
-            <a href="{{ url_for('assets.list_assets') }}" class="text-gray-900 hover:text-white">Assets</a>
+            <a href="{{ url_for('scan.index') }}" class="text-gray-900 text-base relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-gray-900 after:transition-all after:duration-200 hover:after:w-full">Scan</a>
+            <a href="{{ url_for('bins.list_bins') }}" class="text-gray-900 text-base relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-gray-900 after:transition-all after:duration-200 hover:after:w-full">Bins</a>
+            <a href="{{ url_for('assets.list_assets') }}" class="text-gray-900 text-base relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-gray-900 after:transition-all after:duration-200 hover:after:w-full">Assets</a>
         </div>
         </div>
     </nav>
