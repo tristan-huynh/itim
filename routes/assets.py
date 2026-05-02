@@ -1,7 +1,11 @@
+import io
 import secrets
 import string
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, request, session, jsonify
+import barcode
+import qrcode
+from barcode.writer import ImageWriter
+from flask import Blueprint, render_template, request, redirect, url_for, flash, request, session, jsonify, send_file
 from models import db, Bin, Asset
 
 
@@ -74,6 +78,27 @@ def move(tag):
     asset.bin_id = request.form.get('bin_id') or None
     db.session.commit()
     return redirect(url_for('assets.detail', tag=tag))
+
+
+@assets_bp.route('/<tag>/barcode.png')
+def barcode_img(tag):
+    asset = Asset.query.filter_by(asset_tag=tag).first_or_404()
+    code128 = barcode.get('code128', asset.asset_tag, writer=ImageWriter())
+    buf = io.BytesIO()
+    code128.write(buf, options={'write_text': True, 'module_height': 10, 'font_size': 6, 'text_distance': 2})
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
+
+
+@assets_bp.route('/<tag>/qr.png')
+def qr(tag):
+    asset = Asset.query.filter_by(asset_tag=tag).first_or_404()
+    url = url_for('assets.detail', tag=asset.asset_tag, _external=True)
+    img = qrcode.make(url)
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
 
 
 @assets_bp.route('/<tag>/delete', methods=['POST'])
