@@ -1,7 +1,11 @@
+import io
 import secrets
 import string
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, request, session, jsonify
+import barcode
+import qrcode
+from barcode.writer import ImageWriter
+from flask import Blueprint, render_template, request, redirect, url_for, flash, request, session, jsonify, send_file
 from models import db, Bin, Asset
 
 
@@ -47,6 +51,7 @@ def new():
         asset_tag = request.form.get('asset_tag', '').strip()
         name = request.form.get('name', '').strip()
         barcode = request.form.get('barcode', '').strip() or None
+        serial_number = request.form.get('serial_number', '').strip() or None
         bin_id = request.form.get('bin_id') or None
         if not asset_tag or not name:
             flash('Asset tag and name are required.', 'danger')
@@ -55,8 +60,11 @@ def new():
         elif barcode and Asset.query.filter_by(barcode=barcode).first():
             flash('An asset with that barcode already exists.', 'danger')
         else:
+            user = session.get('user')
             asset = Asset(
-                asset_tag=asset_tag, name=name, barcode=barcode, bin_id=bin_id,
+                asset_tag=asset_tag, name=name, barcode=barcode,
+                serial_number=serial_number, bin_id=bin_id,
+                created_by=user['preferred_username'] if user else None,
             )
             db.session.add(asset)
             db.session.commit()
@@ -66,10 +74,34 @@ def new():
 
 @assets_bp.route('/<tag>/move', methods=['POST'])
 def move(tag):
+    from datetime import datetime, timezone
     asset = Asset.query.filter_by(asset_tag=tag).first_or_404()
     asset.bin_id = request.form.get('bin_id') or None
+    asset.last_modified_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    asset.last_modified_by = (session.get('user') or {}).get('preferred_username')
     db.session.commit()
     return redirect(url_for('assets.detail', tag=tag))
+
+
+@assets_bp.route('/<tag>/barcode.png')
+def barcode_img(tag):
+    asset = Asset.query.filter_by(asset_tag=tag).first_or_404()
+    code128 = barcode.get('code128', asset.asset_tag, writer=ImageWriter())
+    buf = io.BytesIO()
+    code128.write(buf, options={'write_text': True, 'module_height': 10, 'font_size': 6, 'text_distance': 4})
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
+
+
+@assets_bp.route('/<tag>/qr.png')
+def qr(tag):
+    asset = Asset.query.filter_by(asset_tag=tag).first_or_404()
+    url = url_for('assets.detail', tag=asset.asset_tag, _external=True)
+    img = qrcode.make(url)
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
 
 
 @assets_bp.route('/<tag>/delete', methods=['POST'])

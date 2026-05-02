@@ -12,36 +12,61 @@
     <span class="text-gray-700 font-medium">{{ bin.name }}</span>
 </nav>
 
-<div class="flex justify-between items-start mb-6">
-    <div>
-        <h2 class="text-2xl font-semibold">{{ bin.name }}</h2> 
-        <p class="text-sm text-gray-500 mt-1">
-        Asset Tag: <code class="bg-gray-100 px-1">{{ bin.tag }}</code>
-        &nbsp;·&nbsp;
-        Crate:
-        {% if bin.crate %}
-            <a href="{{ url_for('crates.detail', crate_id=bin.crate.id) }}" class="text-slate-700 hover:underline">{{ bin.crate.name }}</a>
-        {% else %}
-            <em class="text-gray-400">None</em>
-        {% endif %}
-        &nbsp;·&nbsp;
-        Last scan: {{ bin.last_scan.strftime('%Y-%m-%d %H:%M') if bin.last_scan else 'Never' }}
-        </p>
+<div class="flex gap-6 items-start mb-6">
+
+    <!-- col 1: main info -->
+    <div class="flex-1">
+        <h2 class="text-2xl font-semibold mb-2">{{ bin.name }}</h2>
+        <dl class="text-sm text-gray-500 space-y-0.5">
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Tag</dt>
+                <dd><code class="bg-gray-100 px-1">{{ bin.tag }}</code></dd>
+            </div>
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Crate</dt>
+                <dd>{% if bin.crate %}<a href="{{ url_for('crates.detail', crate_id=bin.crate.id) }}" class="text-slate-700 hover:underline">{{ bin.crate.name }}</a>{% else %}<em class="text-gray-400">None</em>{% endif %}</dd>
+            </div>
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Last Scan</dt>
+                <dd>{{ bin.last_scan.strftime('%Y-%m-%d %H:%M') if bin.last_scan else 'Never' }}{% if bin.last_scanned_by %} by {{ bin.last_scanned_by }}{% endif %}</dd>
+            </div>
+            {% if bin.last_modified_at %}
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Modified</dt>
+                <dd>{{ bin.last_modified_at.strftime('%Y-%m-%d %H:%M') }}{% if bin.last_modified_by %} by {{ bin.last_modified_by }}{% endif %}</dd>
+            </div>
+            {% endif %}
+        </dl>
     </div>
-    <div class="flex gap-2">
+
+    <!-- col 2: barcode + QR code -->
+    <div class="flex-shrink-0 flex gap-4 items-start print:border print:p-2">
+        <div class="text-center">
+            <img src="{{ url_for('bins.barcode_img', tag=bin.tag) }}" alt="Barcode" class="h-32 border border-gray-200">
+            <p class="text-xs text-gray-500 mt-1">{{ bin.tag }}</p>
+        </div>
+        <div class="text-center">
+            <img src="{{ url_for('bins.qr', tag=bin.tag) }}" alt="QR code" class="w-32 h-32 border border-gray-200">
+            <p class="text-xs text-gray-500 mt-1">{{ bin.tag }}</p>
+        </div>
+    </div>
+
+    <!-- col 3: actions -->
+    <div class="flex-shrink-0 flex gap-2">
         <a href="{{ url_for('bins.new') }}"
-        class="bg-slate-700 text-white hover:bg-slate-800 px-3 py-1.5 text-sm">
-        New Child Bin
+           class="bg-slate-700 text-white hover:bg-slate-800 px-3 py-1.5 text-sm">
+            New Child Bin
         </a>
         <a href="{{ url_for('assets.new') }}"
-        class="bg-slate-700 text-white hover:bg-slate-800 px-3 py-1.5 text-sm">
-        New Asset
+           class="bg-slate-700 text-white hover:bg-slate-800 px-3 py-1.5 text-sm">
+            New Asset
         </a>
         <form method="post" action="{{ url_for('bins.delete', tag=bin.tag) }}"
-        <button type="submit"
-                class="bg-red-500 text-white hover:bg-red-600 px-3 py-1.5 text-sm">
-            Delete
-        </button>
+              onsubmit="return confirm('Delete this bin?')">
+            <button type="submit"
+                    class="bg-red-500 text-white hover:bg-red-600 px-3 py-1.5 text-sm">
+                Delete
+            </button>
         </form>
     </div>
 </div>

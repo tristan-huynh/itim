@@ -1,35 +1,57 @@
 {% extends 'base.html' %}
 {% block title %}{{ crate.name }} - ITIM{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
 {% block content %}
 
 <div class="flex justify-between items-start mb-6">
     <div>
-        <h2 class="text-2xl font-semibold">{{ crate.name }}</h2>
-        <p class="text-sm text-gray-500 mt-1">
-        {% if crate.latitude is not none and crate.longitude is not none %}
-            {{ crate.latitude }}, {{ crate.longitude }}
-        {% else %}
-            <em>No location set</em>
-        {% endif %}
-        </p>
+        <h2 class="text-2xl font-semibold mb-2">{{ crate.name }}</h2>
+        <dl class="text-sm text-gray-500 space-y-0.5">
+            <div class="flex gap-2">
+                <dt class="w-28 shrink-0 font-medium text-gray-600">Location</dt>
+                <dd>{% if crate.latitude is not none and crate.longitude is not none %}{{ crate.latitude }}, {{ crate.longitude }}{% else %}<em class="text-gray-400">Not set</em>{% endif %}</dd>
+            </div>
+        </dl>
     </div>
     <div class="flex gap-2">
         <a href="{{ url_for('crates.edit', crate_id=crate.id) }}"
         class="bg-slate-700 text-white hover:bg-slate-800 px-3 py-1.5 text-sm">
         Edit
         </a>
-        <form method="post" action="{{ url_for('crates.delete', crate_id=crate.id) }}"
+        <form method="post" action="{{ url_for('crates.delete', crate_id=crate.id) }}">
         <button type="submit"
                 class="bg-red-500 text-white hover:bg-red-600 px-3 py-1.5 text-sm">
             Delete
         </button>
         </form>
     </div>
-    </div>
+</div>
+
+{% if crate.latitude is not none and crate.longitude is not none %}
+<div id="map"
+     data-lat="{{ crate.latitude }}"
+     data-lng="{{ crate.longitude }}"
+     data-name="{{ crate.name | e }}"
+     class="w-full h-64 mb-6 border border-gray-200"></div>
+<script>
+  const el = document.getElementById('map');
+  const map = L.map(el).setView([+el.dataset.lat, +el.dataset.lng], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+  L.marker([+el.dataset.lat, +el.dataset.lng])
+    .addTo(map)
+    .bindPopup(el.dataset.name)
+    .openPopup();
+</script>
+{% endif %}
 
     {% if crate.bins %}
     <h3 class="text-base font-semibold mb-2">Bins in this crate</h3>
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-gray-200 overflow-hidden">
         <table class="w-full text-sm text-left">
         <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
@@ -45,9 +67,9 @@
                 <td class="px-4 py-3">
                 <a href="{{ url_for('bins.detail', tag=bin.tag) }}" class="text-slate-700 hover:underline font-medium">{{ bin.name }}</a>
                 </td>
-                <td class="px-4 py-3"><code class="bg-gray-100 px-1 rounded text-xs">{{ bin.tag }}</code></td>
+                <td class="px-4 py-3"><code class="bg-gray-100 px-1 text-sm">{{ bin.tag }}</code></td>
                 <td class="px-4 py-3 text-gray-600">{{ bin.children | length }} bin(s), {{ bin.assets | length }} asset(s)</td>
-                <td class="px-4 py-3 text-gray-500">{{ bin.last_scan.strftime('%Y-%m-%d %H:%M') if bin.last_scan else '—' }}</td>
+                <td class="px-4 py-3 text-gray-500">{{ bin.last_scan.strftime('%Y-%m-%d %H:%M') if bin.last_scan else '-' }}</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -1,7 +1,13 @@
+import io
 import secrets
 import string
 
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+import barcode
+import qrcode
+from barcode.writer import ImageWriter
+from datetime import datetime, timezone
+
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, send_file, session, url_for
 from models import db, Bin, Crate
 
 
@@ -71,6 +77,8 @@ def move(tag):
         flash('A bin cannot be its own parent.', 'danger')
     else:
         bin_.parent_id = new_parent
+        bin_.last_modified_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        bin_.last_modified_by = (session.get('user') or {}).get('preferred_username')
         db.session.commit()
     return redirect(url_for('bins.detail', tag=tag))
 
@@ -78,10 +86,32 @@ def move(tag):
 @bins_bp.route('/<tag>/move-crate', methods=['POST'])
 def move_crate(tag):
     bin_ = Bin.query.filter_by(tag=tag).first_or_404()
-    crate_id = request.form.get('crate_id') or None
-    bin_.crate_id = crate_id
+    bin_.crate_id = request.form.get('crate_id') or None
+    bin_.last_modified_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    bin_.last_modified_by = (session.get('user') or {}).get('preferred_username')
     db.session.commit()
     return redirect(url_for('bins.detail', tag=tag))
+
+
+@bins_bp.route('/<tag>/barcode.png')
+def barcode_img(tag):
+    bin_ = Bin.query.filter_by(tag=tag).first_or_404()
+    code128 = barcode.get('code128', bin_.tag, writer=ImageWriter())
+    buf = io.BytesIO()
+    code128.write(buf, options={'write_text': True, 'module_height': 10, 'font_size': 6, 'text_distance': 4})
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
+
+
+@bins_bp.route('/<tag>/qr.png')
+def qr(tag):
+    bin_ = Bin.query.filter_by(tag=tag).first_or_404()
+    url = url_for('bins.detail', tag=bin_.tag, _external=True)
+    img = qrcode.make(url)
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
 
 
 @bins_bp.route('/<tag>/delete', methods=['POST'])
