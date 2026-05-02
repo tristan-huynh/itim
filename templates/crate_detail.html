@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}{{ crate.name }} - ITIM{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
 {% block content %}
 
 <div class="flex justify-between items-start mb-6">
@@ -24,7 +28,26 @@
         </button>
         </form>
     </div>
-    </div>
+</div>
+
+{% if crate.latitude is not none and crate.longitude is not none %}
+<div id="map"
+     data-lat="{{ crate.latitude }}"
+     data-lng="{{ crate.longitude }}"
+     data-name="{{ crate.name | e }}"
+     class="w-full h-64 mb-6 border border-gray-200"></div>
+<script>
+  const el = document.getElementById('map');
+  const map = L.map(el).setView([+el.dataset.lat, +el.dataset.lng], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+  L.marker([+el.dataset.lat, +el.dataset.lng])
+    .addTo(map)
+    .bindPopup(el.dataset.name)
+    .openPopup();
+</script>
+{% endif %}
 
     {% if crate.bins %}
     <h3 class="text-base font-semibold mb-2">Bins in this crate</h3>
