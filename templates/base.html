@@ -18,6 +18,18 @@
             <a href="{{ url_for('crates.list_crates') }}" class="text-gray-900 text-base relative after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gray-900 after:transition-all after:duration-200 hover:after:w-full {% if request.blueprint == 'crates' %}after:w-full{% else %}after:w-0{% endif %}">Crates</a>
             <a href="{{ url_for('bins.list_bins') }}" class="text-gray-900 text-base relative after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gray-900 after:transition-all after:duration-200 hover:after:w-full {% if request.blueprint == 'bins' %}after:w-full{% else %}after:w-0{% endif %}">Bins</a>
             <a href="{{ url_for('assets.list_assets') }}" class="text-gray-900 text-base relative after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gray-900 after:transition-all after:duration-200 hover:after:w-full {% if request.blueprint == 'assets' %}after:w-full{% else %}after:w-0{% endif %}">Assets</a>
+            {% if current_user %}
+                <details class="relative">
+                    <summary class="flex items-center gap-1.5 cursor-pointer list-none text-gray-900 text-base select-none">
+                        {{ current_user.preferred_username }}
+                        <svg class="w-2.5 fill-current text-gray-900" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M169.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 306.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>
+
+                    </summary>
+                    <div class="absolute right-0 mt-2 w-36 bg-white border border-gray-200 shadow-sm py-1 z-10">
+                        <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Sign out</a>
+                    </div>
+                </details>
+            {% endif %}
         </div>
         </div>
     </nav>

@@ -45,3 +45,4 @@ class Asset(db.Model):
     name =      db.Column(db.String(128), nullable=False)
     bin_id =    db.Column(db.Integer, db.ForeignKey('bin.id'), nullable=True)
     last_scan = db.Column(db.DateTime, nullable=True)
+    created_by = db.Column(db.String(256), nullable=True)

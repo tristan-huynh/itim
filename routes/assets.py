@@ -56,9 +56,11 @@ def new():
         elif barcode and Asset.query.filter_by(barcode=barcode).first():
             flash('An asset with that barcode already exists.', 'danger')
         else:
+            user = session.get('user')
             asset = Asset(
                 asset_tag=asset_tag, name=name, barcode=barcode,
                 serial_number=serial_number, bin_id=bin_id,
+                created_by=user['preferred_username'] if user else None,
             )
             db.session.add(asset)
             db.session.commit()
