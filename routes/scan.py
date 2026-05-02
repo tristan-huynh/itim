@@ -1,5 +1,3 @@
-import secrets, string
-
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from models import db, Bin, Asset
 from datetime import datetime, timezone

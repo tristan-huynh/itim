@@ -2,12 +2,23 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+class Crate(db.Model):
+    __tablename__ = 'crate'
+
+    id =        db.Column(db.Integer, primary_key=True)
+    name =      db.Column(db.String(128), nullable=False)
+    latitude =  db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+
+    bins = db.relationship('Bin', backref='crate', lazy='select', order_by='Bin.name')
+
 class Bin(db.Model):
     __tablename__ = 'bin'
 
     id =        db.Column(db.Integer, primary_key=True)
     tag =       db.Column(db.String(64), unique=True, nullable=False)
     name =      db.Column(db.String(128), nullable=False)
+    crate_id =  db.Column(db.Integer, db.ForeignKey('crate.id'), nullable=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('bin.id'), nullable=True)
     last_scan = db.Column(db.DateTime, nullable=True)
 

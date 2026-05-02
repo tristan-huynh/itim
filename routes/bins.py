@@ -2,7 +2,7 @@ import secrets
 import string
 
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
-from models import db, Bin, Asset
+from models import db, Bin, Crate
 
 
 def _unique_bin_tag(prefix=None):
@@ -42,17 +42,21 @@ def generate_tag():
 
 @bins_bp.route('/new', methods=['GET', 'POST'])
 def new():
-    all_bins  = Bin.query.order_by(Bin.name).all()
+    all_bins = Bin.query.order_by(Bin.name).all()
+    all_crates = Crate.query.order_by(Crate.name).all() 
     if request.method == 'POST':
         tag = request.form.get('tag', '').strip()
         name = request.form.get('name', '').strip()
         parent_id = request.form.get('parent_id') or None
+        crate_id = request.form.get('crate_id') or None
         if not tag or not name:
             flash('Tag and name are required.', 'danger')
+        elif not crate_id:
+            flash('A crate must be selected.', 'danger')
         elif Bin.query.filter_by(tag=tag).first():
             flash('A bin with that tag already exists.', 'danger')
         else:
-            bin_ = Bin(tag=tag, name=name, parent_id=parent_id)
+            bin_ = Bin(tag=tag, name=name, parent_id=parent_id, crate_id=crate_id)
             db.session.add(bin_)
             db.session.commit()
             return redirect(url_for('bins.detail', bin_id=bin_.id))
