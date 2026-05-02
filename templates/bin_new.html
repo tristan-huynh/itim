@@ -2,6 +2,57 @@
 {% block title %}New Bin - ITIM{% endblock %}
 {% block content %}
 
+<h2 class="text-2xl font-semibold mb-6">New Bin</h2>
+<form method="post" class="max-w-md space-y-4">
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+        Tag <span class="text-red-500">*</span>
+        </label>
+        <div class="flex">
+        <input type="text" name="tag" id="tag" required autofocus
+                class="flex-1 border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent">
+        <button type="button" id="gen-tag"
+                class="border border-l-0 border-gray-300 px-3 py-2 text-sm bg-gray-50 hover:bg-gray-100 text-gray-600">
+            Generate
+        </button>
+        </div>
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+        Name <span class="text-red-500">*</span>
+        </label>
+        <input type="text" name="name" required
+            class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent">
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Parent Bin</label>
+        <select name="parent_id" id="parent_id"
+                class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent">
+        <option value="">None (top-level)</option>
+        {% for b in all_bins %}
+            <option value="{{ b.id }}">{{ b.name }} ({{ b.tag }})</option>
+        {% endfor %}
+        </select>
+    </div>
+    <div class="flex items-center gap-3 pt-2">
+        <button type="submit"
+                class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium">
+        Create
+        </button>
+        <a href="{{ url_for('bins.list_bins') }}" class="text-sm text-slate-700 hover:underline">Cancel</a>
+    </div>
+</form>
 
+<script>
+    document.getElementById('gen-tag').addEventListener('click', async () => {
+        const parentId = document.getElementById('parent_id').value;
+        const url = parentId
+        ? `{{ url_for("bins.generate_tag") }}?parent_id=${parentId}`
+        : '{{ url_for("bins.generate_tag") }}';
+        const res = await fetch(url);
+        const data = await res.json();
+        document.getElementById('tag').value = data.tag;
+    });
+</script>
 
 {% endblock %}

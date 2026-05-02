@@ -18,7 +18,7 @@
             <th class="px-4 py-3 font-semibold text-gray-600">Name</th>
             <th class="px-4 py-3 font-semibold text-gray-600">Asset Tag</th>
             <th class="px-4 py-3 font-semibold text-gray-600">Barcode</th>
-            <th class="px-4 py-3 font-semibold text-gray-600">Location</th>
+            <th class="px-4 py-3 font-semibold text-gray-600">Bin</th>
             <th class="px-4 py-3 font-semibold text-gray-600">Last Scan</th>
             </tr>
         </thead>
@@ -28,7 +28,7 @@
                 <td class="px-4 py-3">
                 <a href="{{ url_for('assets.detail', asset_id=asset.id) }}" class="text-slate-700 hover:underline font-medium">{{ asset.name }}</a>
                 </td>
-                <td class="px-4 py-3"><code class="bg-gray-100 px-1 text-base">{{ asset.asset_tag }}</code></td>
+                <td class="px-4 py-3"><code class="bg-gray-100 px-1 text-sm">{{ asset.asset_tag }}</code></td>
                 <td class="px-4 py-3 text-gray-600">{{ asset.barcode or '-' }}</td>
                 <td class="px-4 py-3">
                 {% if asset.bin %}

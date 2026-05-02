@@ -8,13 +8,73 @@
         <div class="flex mb-4">
         <input type="text" name="tag" id="tag-input"
                 class="flex-1 border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent"
-                placeholder="Scan or enter tag…" autofocus>
+                placeholder="Scan or enter tag..." autofocus>
         <button type="submit"
                 class="bg-slate-700 hover:bg-slate-800 text-white px-5 py-3 text-sm font-medium">
             Look up
         </button>
         </div>
     </form>
+
+    {% if error %}
+        <div class="mb-4 bg-yellow-200 text-yellow-800 px-4 py-3">
+        {{ error }}
+        </div>
+    {% endif %}
+
+    {% if result %}
+        <div class="border border-gray-200 shadow-sm bg-white">
+        <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
+            {% if result_type == 'bin' %}
+            <span class="bg-emerald-700 text-white text-sm font-medium px-2 py-0.5">Bin</span>
+            {% else %}
+            <span class="bg-red-700 text-white text-sm font-medium px-2 py-0.5">Asset</span>
+            {% endif %}
+            <span class="text-sm text-gray-500">
+            Last scan: {{ result.last_scan.strftime('%Y-%m-%d %H:%M') if result.last_scan else 'Never' }}
+            </span>
+        </div>
+        <div class="p-4">
+            <h3 class="text-lg font-semibold mb-2">{{ result.name }}</h3>
+            {% if result_type == 'asset' %}
+            <p class="text-sm mb-1"><span class="font-medium">Asset tag:</span> <code class="bg-gray-100 px-1">{{ result.asset_tag }}</code></p>
+            {% if result.barcode %}
+                <p class="text-sm mb-1"><span class="font-medium">Barcode:</span> <code class="bg-gray-100 px-1">{{ result.barcode }}</code></p>
+            {% endif %}
+            <p class="text-sm mb-3">
+                <span class="font-medium">Location:</span>
+                {% if result.bin %}
+                {% for b in result.bin.breadcrumb() %}
+                    <a href="{{ url_for('bins.detail', bin_id=b.id) }}" class="text-slate-700 hover:underline">{{ b.name }}</a>{% if not loop.last %} <span class="text-gray-400">›</span> {% endif %}
+                {% endfor %}
+                {% else %}
+                <em class="text-gray-400">Unassigned</em>
+                {% endif %}
+            </p>
+            <a href="{{ url_for('assets.detail', asset_id=result.id) }}"
+                class="bg-slate-700 text-white hover:bg-slate-800 px-3 py-1.5 text-sm">
+                View asset
+            </a>
+            {% else %}
+            <p class="text-sm mb-1"><span class="font-medium">Tag:</span> <code class="bg-gray-100 px-1">{{ result.tag }}</code></p>
+            <p class="text-sm mb-1">
+                <span class="font-medium">Location:</span>
+                {% for b in result.breadcrumb() %}
+                <a href="{{ url_for('bins.detail', bin_id=b.id) }}" class="text-slate-700 hover:underline">{{ b.name }}</a>{% if not loop.last %} <span class="text-gray-400">›</span> {% endif %}
+                {% endfor %}
+            </p>
+            <p class="text-sm mb-3">
+                <span class="font-medium">Contents:</span>
+                {{ result.children | length }} bin(s), {{ result.assets | length }} asset(s)
+            </p>
+            <a href="{{ url_for('bins.detail', bin_id=result.id) }}"
+                class="bg-slate-700 text-white hover:bg-slate-800 px-3 py-1.5 text-sm">
+                View bin
+            </a>
+            {% endif %}
+        </div>
+        </div>
+    {% endif %}
 </div>
 
 <script>
