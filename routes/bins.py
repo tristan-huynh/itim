@@ -31,7 +31,6 @@ def new():
         parent_id = request.form.get('parent_id') or None
         if not tag or not name:
             flash('Tag and name are required.', 'danger')
-
         else:
             bin_ = Bin(tag=tag, name=name, parent_id=parent_id)
             db.session.add(bin_)

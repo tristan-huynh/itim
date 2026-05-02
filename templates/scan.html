@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Scan - ITIM{% endblock %}
+{% block content %}
+
+<div class="max-w-xl mx-auto">
+  <h2 class="text-2xl font-semibold mb-6">Scan</h2>
+  <form method="post" autocomplete="off">
+    <div class="flex mb-4">
+      <input type="text" name="tag" id="tag-input"
+             class="flex-1 border border-gray-300 rounded-l px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+             placeholder="Scan or enter tag…" autofocus>
+      <button type="submit"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-r text-sm font-medium">
+        Look up
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

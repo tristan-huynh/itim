@@ -8,4 +8,4 @@ scan_bp = Blueprint('scan', __name__)
 
 @scan_bp.route('/', methods=['GET', 'POST'])
 def index():
-    
+    return render_template('scan.html')
