@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}New Crate - ITIM{% endblock %}
+{% block content %}
+
+<h2 class="text-2xl font-semibold mb-6">New Crate</h2>
+<form method="post" class="max-w-md space-y-4">
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+        Name <span class="text-red-500">*</span>
+        </label>
+        <input type="text" name="name" required autofocus
+            class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent">
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+        <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+        <input type="number" name="latitude" step="any" placeholder="e.g. 45.4215"
+                class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent">
+        </div>
+        <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+        <input type="number" name="longitude" step="any" placeholder="e.g. -75.6972"
+                class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent">
+        </div>
+    </div>
+    <div class="flex items-center gap-3 pt-2">
+        <button type="submit"
+                class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium">
+        Create
+        </button>
+        <a href="{{ url_for('crates.list_crates') }}" class="text-sm text-slate-700 hover:underline">Cancel</a>
+    </div>
+</form>
+
+{% endblock %}
