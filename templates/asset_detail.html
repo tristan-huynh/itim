@@ -8,6 +8,7 @@
         <p class="text-sm text-gray-500 mt-1">
             Asset Tag: <code class="bg-gray-100 text-sm px-1">{{ asset.asset_tag }}</code>
             {% if asset.barcode %}&nbsp;·&nbsp; Barcode: <code class="bg-gray-100 px-1">{{ asset.barcode }}</code>{% endif %}
+            {% if asset.serial_number %}&nbsp;·&nbsp; S/N: <code class="bg-gray-100 px-1">{{ asset.serial_number }}</code>{% endif %}
             &nbsp;·&nbsp;
             Last scan: {{ asset.last_scan.strftime('%Y-%m-%d %H:%M') if asset.last_scan else 'Never' }}
             {% if asset.created_by %}&nbsp;·&nbsp; Created by: {{ asset.created_by }}{% endif %}

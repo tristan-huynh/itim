@@ -41,6 +41,7 @@ class Asset(db.Model):
     id =        db.Column(db.Integer, primary_key=True)
     asset_tag = db.Column(db.String(64), unique=True, nullable=False)
     barcode =   db.Column(db.String(64), unique=True, nullable=True)
+    serial_number = db.Column(db.String(128), nullable=True)
     name =      db.Column(db.String(128), nullable=False)
     bin_id =    db.Column(db.Integer, db.ForeignKey('bin.id'), nullable=True)
     last_scan = db.Column(db.DateTime, nullable=True)

@@ -47,6 +47,7 @@ def new():
         asset_tag = request.form.get('asset_tag', '').strip()
         name = request.form.get('name', '').strip()
         barcode = request.form.get('barcode', '').strip() or None
+        serial_number = request.form.get('serial_number', '').strip() or None
         bin_id = request.form.get('bin_id') or None
         if not asset_tag or not name:
             flash('Asset tag and name are required.', 'danger')
@@ -56,7 +57,8 @@ def new():
             flash('An asset with that barcode already exists.', 'danger')
         else:
             asset = Asset(
-                asset_tag=asset_tag, name=name, barcode=barcode, bin_id=bin_id,
+                asset_tag=asset_tag, name=name, barcode=barcode,
+                serial_number=serial_number, bin_id=bin_id,
             )
             db.session.add(asset)
             db.session.commit()

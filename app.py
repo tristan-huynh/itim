@@ -6,9 +6,9 @@ from models import db
 
 def create_app():
 
-    app = Flask(__name__, static_folder='assets')
+    app = Flask(__name__, static_folder='assets', static_url_path='/static')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///itim.db'
-    
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 24 * 3600  # 1 day
     db.init_app(app)
     Migrate(app, db)
     
@@ -21,7 +21,7 @@ def create_app():
     app.register_blueprint(bins_bp)
     app.register_blueprint(assets_bp)
     app.register_blueprint(crates_bp)
-    
+
     return app
 
 app = create_app()
